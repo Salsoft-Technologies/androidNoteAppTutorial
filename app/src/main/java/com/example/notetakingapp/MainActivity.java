@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 String noteText = noteEditText.getText().toString();
                 if (!noteText.isEmpty()) {
                     notes.add(noteText);
-                    notesAdapter.notifyDataSetChanged();
+                    notesAdapter.getFilter().filter("");
                     noteEditText.getText().clear();
                 }
             }

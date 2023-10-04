@@ -15,29 +15,29 @@ import java.util.Collections;
 import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> implements Filterable {
-    private List<String> notes, filteredNotes;
+    private List<String> notes, filteredList;
     public NotesAdapter(List<String> notes) {
         this.notes = notes;
+        this.filteredList = new ArrayList<>(notes);
 
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Inflate the layout for each item
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.note_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Bind data to the ViewHolder
-        String note = notes.get(position);
-        holder.bind(note);
+        String item = filteredList.get(position);
+        holder.bind(item);
     }
 
     @Override
     public int getItemCount() {
-        return notes.size();
+        return filteredList.size();
     }
 
     @Override
@@ -45,26 +45,26 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                String filterText = charSequence.toString().toLowerCase().trim();
-                List<String> filteredList = new ArrayList<>();
-                Log.d("NOTESADAPTER",charSequence.toString());
-                for (String note : notes) {
-                    Log.d("NOTESADAPTER","note : "+note+charSequence.toString());
+                String query = charSequence.toString().toLowerCase();
 
-                    if (note.toLowerCase().contains(filterText)) {
-                        filteredList.add(note);
+                List<String> filteredResults = new ArrayList<>();
+
+                for (String item : notes) {
+                    if (item.toLowerCase().contains(query)) {
+                        filteredResults.add(item);
                     }
                 }
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = Collections.emptyList();
-                return filterResults;
+
+                FilterResults results = new FilterResults();
+                results.values = filteredResults;
+                results.count = filteredResults.size();
+                return results;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                notes.clear();
-                notes.addAll((List<String>) filterResults.values);
-                notifyDataSetChanged(); // Notify the adapter of changes
+                filteredList = (List<String>) filterResults.values;
+                notifyDataSetChanged();
             }
         };
     }
